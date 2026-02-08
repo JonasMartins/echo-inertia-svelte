@@ -1,0 +1,33 @@
+version: '3'
+
+vars:
+  BINARY_NAME: _main
+  OUT_DIR: out
+
+tasks:
+  build:
+    desc: Build the Go binary for macOS
+    cmds:
+      - mkdir -p {{.OUT_DIR}}
+      - GOOS=darwin GOARCH=arm64 go build -o {{.OUT_DIR}}/{{.BINARY_NAME}} main.go
+
+  run:
+    desc: Build and run the binary
+    deps: [build]
+    cmds:
+      - ./{{.OUT_DIR}}/{{.BINARY_NAME}}
+
+  clean:
+    desc: Remove the out directory and binaries
+    cmds:
+      - rm -rf {{.OUT_DIR}}
+
+  test-health:
+    desc: Test the health endpoint
+    cmds:
+      - curl -i http://localhost:8080/health
+
+  test-greeting:
+    desc: Test the greeting endpoint
+    cmds:
+      - curl -i http://localhost:8080/greeting
