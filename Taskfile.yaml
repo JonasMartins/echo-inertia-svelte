@@ -3,8 +3,15 @@ version: "3"
 vars:
   BINARY_NAME: _main
   OUT_DIR: out
+  DONE_MESSAGE: "Operation Finished"
 
 tasks:
+  deps:
+    desc: Run go mod tidy
+    cmds:
+      - cd project && go mod tidy
+      - echo "{{.DONE_MESSAGE}}"
+
   front-dev:
     desc: Run Vite dev server
     cmds:

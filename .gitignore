@@ -2,3 +2,5 @@ node_modules/
 .DS_Store
 .env
 out/
+project/src/services/web/public/
+project/src/services/web/build/
