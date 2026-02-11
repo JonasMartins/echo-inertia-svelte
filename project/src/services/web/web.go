@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"echo-inertia.com/src/internal/configs"
+	"echo-inertia.com/src/pkg/utils"
 	inertia "github.com/kohkimakimoto/inertia-echo/v2"
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +19,7 @@ import (
 //go:embed public/build/* views/*.html
 var embeddedFiles embed.FS
 
-func SetRender(e *echo.Echo, r *inertia.HTMLRenderer, cfg configs.Config) {
+func SetRender(e *echo.Echo, r *inertia.HTMLRenderer, cfg *configs.Config) {
 
 	// 2. Configure built-in Vite support
 	r.ViteBasePath = "/build" // Matches vite.config.js outDir: 'public/build'
@@ -26,10 +27,15 @@ func SetRender(e *echo.Echo, r *inertia.HTMLRenderer, cfg configs.Config) {
 	if cfg.Env == "development" {
 		log.Println("running in dev mode")
 		r.Debug = true
-		r.ViteDevServerURL = "http://localhost:3000"
-		r.MustParseGlob("views/*.html")
+		r.ViteDevServerURL = "http://localhost:5173"
+		path, err := utils.GetFilePath([]string{"src", "services", "web"})
+		if err != nil {
+			utils.FatalResult("error getting abs template path", err)
+		}
+
+		r.MustParseGlob(path + "/views/*.html")
 		// Serve static files from disk in dev
-		e.Static("/build", "public/build")
+		e.Static("/build", path+"/public/build")
 	} else {
 		// --- PRODUCTION MODE (Embedded) ---
 		log.Println("running in prod mode")

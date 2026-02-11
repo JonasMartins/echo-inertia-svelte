@@ -12,7 +12,7 @@ tasks:
       - cd project && go mod tidy
       - echo "{{.DONE_MESSAGE}}"
 
-  front-dev:
+  front:
     desc: Run Vite dev server
     cmds:
       - pnpm vite
@@ -20,7 +20,7 @@ tasks:
   build-back:
     desc: Build backend
     cmds:
-      - GOOS=darwin GOARCH=arm64 go build -o {{.OUT_DIR}}/{{.BINARY_NAME}} main.go
+      - GOOS=darwin GOARCH=arm64 go build -o {{.OUT_DIR}}/{{.BINARY_NAME}} project/src/services/main/cmd/*.go
 
   dev:
     desc: Build back and run
@@ -30,12 +30,13 @@ tasks:
     cmds:
       - env $(cat .env) ./out/{{.BINARY_NAME}}
 
-  build-all:
+  prod:
     desc: Build both frontend and backend
     cmds:
       - pnpm vite build
       - mkdir -p {{.OUT_DIR}}
-      - GOOS=darwin GOARCH=arm64 go build -o {{.OUT_DIR}}/{{.BINARY_NAME}} main.go
+      - GOOS=darwin GOARCH=arm64 go build -o {{.OUT_DIR}}/{{.BINARY_NAME}} project/src/services/main/cmd/*.go
+      - env $(cat .env) ./out/{{.BINARY_NAME}}
 
   clean:
     desc: Clean executables

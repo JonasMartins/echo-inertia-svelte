@@ -4,3 +4,4 @@ node_modules/
 out/
 project/src/services/web/public/
 project/src/services/web/build/
+project/logs/

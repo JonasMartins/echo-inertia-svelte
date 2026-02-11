@@ -13,24 +13,27 @@ import (
 
 	"echo-inertia.com/src/services/main/internal/bootstrap"
 	"echo-inertia.com/src/services/main/internal/handler/router"
+	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
 	Bootstrap *bootstrap.Bootstrap
-	Srv       *http.Server
+	Srv       *echo.Echo
+	Addr      string
 }
 
 func NewServer() *Server {
 	b := bootstrap.MustGetBootstrapInstance()
 	addr := fmt.Sprintf(":%s", b.Config.Port)
 	router := router.NewRouter(b)
-	srv := &http.Server{
-		Addr:    addr,
-		Handler: router,
-	}
+	// srv := &http.Server{
+	// 	Addr:    addr,
+	// 	Handler: router,
+	// }
 	return &Server{
 		Bootstrap: b,
-		Srv:       srv,
+		Srv:       router,
+		Addr:      addr,
 	}
 }
 
@@ -49,8 +52,8 @@ func runHTTPServer(s *Server) {
 	log.Printf("HTTP server running at :%s", s.Bootstrap.Config.Port)
 	log.Printf("( %s MODE ) running main project", env)
 	go func() {
-		// if err := s.Srv.Start(s.Addr); !errors.Is(err, http.ErrServerClosed) {
-		if err := s.Srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+		if err := s.Srv.Start(s.Addr); !errors.Is(err, http.ErrServerClosed) {
+			// if err := s.Srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("HTTP Server Error %v", err)
 		}
 	}()
