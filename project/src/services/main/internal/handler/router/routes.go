@@ -2,15 +2,19 @@
 package router
 
 import (
+	"fmt"
+
 	"echo-inertia.com/src/services/main/internal/bootstrap"
 	"echo-inertia.com/src/services/web"
 	inertia "github.com/kohkimakimoto/inertia-echo/v2"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func NewRouter(b *bootstrap.Bootstrap) *echo.Echo {
 
 	e := echo.New()
+	setLogger(e)
 
 	// 1. Initialize the built-in HTML Renderer
 	r := inertia.NewHTMLRenderer()
@@ -34,4 +38,16 @@ func NewRouter(b *bootstrap.Bootstrap) *echo.Echo {
 		})
 	})
 	return e
+}
+
+func setLogger(e *echo.Echo) {
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogStatus: true,
+		LogURI:    true,
+		LogMethod: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			fmt.Printf("%s: %s -> :%d\n", v.Method, v.URI, v.Status)
+			return nil
+		},
+	}))
 }

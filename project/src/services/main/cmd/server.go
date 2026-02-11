@@ -13,12 +13,11 @@ import (
 
 	"echo-inertia.com/src/services/main/internal/bootstrap"
 	"echo-inertia.com/src/services/main/internal/handler/router"
-	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
 	Bootstrap *bootstrap.Bootstrap
-	Srv       *echo.Echo
+	Srv       *http.Server
 	Addr      string
 }
 
@@ -26,13 +25,13 @@ func NewServer() *Server {
 	b := bootstrap.MustGetBootstrapInstance()
 	addr := fmt.Sprintf(":%s", b.Config.Port)
 	router := router.NewRouter(b)
-	// srv := &http.Server{
-	// 	Addr:    addr,
-	// 	Handler: router,
-	// }
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: router,
+	}
 	return &Server{
 		Bootstrap: b,
-		Srv:       router,
+		Srv:       srv,
 		Addr:      addr,
 	}
 }
@@ -49,32 +48,29 @@ func runHTTPServer(s *Server) {
 		delay = 3 * time.Second
 	}
 	s.Bootstrap.RunJobs()
+
 	log.Printf("HTTP server running at :%s", s.Bootstrap.Config.Port)
 	log.Printf("( %s MODE ) running main project", env)
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+		syscall.SIGQUIT,
+		syscall.SIGINT,
+	)
+	defer stop()
 	go func() {
-		if err := s.Srv.Start(s.Addr); !errors.Is(err, http.ErrServerClosed) {
-			// if err := s.Srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+		if err := s.Srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("HTTP Server Error %v", err)
 		}
 	}()
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		syscall.SIGQUIT)
-	<-quit
-	log.Println("Shutdown Server ...")
+	<-ctx.Done()
+
 	ctx, cancel := context.WithTimeout(context.Background(), delay)
 	defer cancel()
 	if err := s.Srv.Shutdown(ctx); err != nil {
-		log.Printf("Server Shutdown error: %v\n", err)
-		defer os.Exit(1)
-	} else {
-		log.Printf("gracefully stopped\n")
+		log.Fatalf("Server Shutdown error: %v\n", err)
 	}
-	conn := <-ctx.Done()
-	log.Println("timeout of 3 seconds. ", conn)
-	log.Println("Server exiting")
 }
 
 func RunLoop() {
