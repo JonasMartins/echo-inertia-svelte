@@ -14,6 +14,7 @@ type Config struct {
 	AppName          string
 	Env              string
 	Port             string
+	FrontPort        string
 	RedisURL         string
 	AvailableAPIKeys []string
 	CSRFSecret       string
@@ -26,7 +27,7 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	env := utils.GetEnvDefault("ENV", "development")
-
+	frontPort := utils.GetEnvDefault("FRONT_DEV_PORT", "3000")
 	port := os.Getenv("HTTP_PORT")
 	if port == "" {
 		return nil, errors.New("HTTP_PORT is required")
@@ -75,6 +76,7 @@ func LoadConfig() (*Config, error) {
 		AppName:          appName,
 		Env:              env,
 		Port:             port,
+		FrontPort:        frontPort,
 		AvailableAPIKeys: keys,
 		CSRFSecret:       csrf,
 		RedisURL:         redisURL,

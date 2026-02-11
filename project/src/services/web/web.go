@@ -27,7 +27,7 @@ func SetRender(e *echo.Echo, r *inertia.HTMLRenderer, cfg *configs.Config) {
 	if cfg.Env == "development" {
 		log.Println("running in dev mode")
 		r.Debug = true
-		r.ViteDevServerURL = "http://localhost:5173"
+		r.ViteDevServerURL = "http://localhost:" + cfg.FrontPort
 		path, err := utils.GetFilePath([]string{"src", "services", "web"})
 		if err != nil {
 			utils.FatalResult("error getting abs template path", err)
