@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "$lib/*": ["project/src/services/web/resources/js/lib/*"]
+    },
+    "allowJs": true,
+    "skipLibCheck": true
+  },
+  "include": ["project/src/services/web/resources/js/**/*"]
+}
