@@ -6,6 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/go-redis/cache/v9 v9.0.0
 	github.com/google/uuid v1.6.0
+	github.com/hibiken/asynq v0.26.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/kohkimakimoto/inertia-echo/v2 v2.1.0
 	github.com/labstack/echo/v4 v4.15.0
@@ -30,12 +31,14 @@ require (
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
+	github.com/spf13/cast v1.10.0 // indirect
 	github.com/vmihailenco/go-tinylfu v0.2.2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.4 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/mod v0.30.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )
 
 require (
